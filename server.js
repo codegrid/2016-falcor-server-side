@@ -2,12 +2,23 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const falcorExpress = require('falcor-express');
+const FalcorRouter = require('falcor-router');
 
 const app = express();
 
 app.use(bodyParser.urlencoded({extended: true}));
 app.use('/model.json', falcorExpress.dataSourceRoute((req, res) => {
-  // TODO: FalcorRouterインスタンスを返す
+  return new FalcorRouter([
+    {
+      route: 'hello',
+      get() {
+        return {
+          path: ['hello'],
+          value: 'hello!'
+        };
+      }
+    }
+  ]);
 }));
 app.use(express.static('./'));
 
