@@ -23,3 +23,24 @@ model.get(['greetings', {from: 0, to: 2}, 'word']).then(res => {
   console.log(JSON.stringify(res, null, 2));
   console.groupEnd(name);
 });
+
+model.get(['greetingsWithRanges', [0, 1, 2], 'word']).then(res => {
+  const name = '["greetingsWithRanges", [0, 1, 2], "word"]';
+  console.group(name);
+  console.log(JSON.stringify(res, null, 2));
+  console.groupEnd(name);
+});
+
+model.get(['greetingsWithRanges', {length: 3}, 'word']).then(res => {
+  const name = '["greetingsWithRanges", {length: 3}, "word"]';
+  console.group(name);
+  console.log(JSON.stringify(res, null, 2));
+  console.groupEnd(name);
+});
+
+model.get(['greetingsWithRanges', {from: 0, to: 2}, 'word']).then(res => {
+  const name = '["greetingsWithRanges", {from: 0, to: 2}, "word"]';
+  console.group(name);
+  console.log(JSON.stringify(res, null, 2));
+  console.groupEnd(name);
+});

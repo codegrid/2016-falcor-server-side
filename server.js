@@ -38,6 +38,30 @@ app.use('/model.json', falcorExpress.dataSourceRoute((req, res) => {
           };
         });
       }
+    },
+    {
+      route: 'greetingsWithRanges[{ranges:ranges}].word',
+      get(pathSet) {
+        const greetings = [
+          {word: 'Konnichiwa'},
+          {word: 'Good afternoon'},
+          {word: 'Bonjour'}
+        ];
+        // クライアントから['greetings', [0, 1, 2] 'word'] というPathSetのリクエストが
+        // 行われた場合、pathSet.ranges には [{from: 0, to: 2}] が渡ってくる。
+        const ranges = pathSet.ranges;
+        return ranges.reduce((results, range) => {
+          const from = range.from;
+          const to = range.to;
+          for (let i = from; i <= to; i++) {
+            results.push({
+              path: ['greetingsWithRanges', i, 'word'],
+              value: greetings[i].word
+            });
+          }
+          return results;
+        }, []);
+      }
     }
   ]);
 }));
