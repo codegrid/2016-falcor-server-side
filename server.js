@@ -86,6 +86,22 @@ app.use('/model.json', falcorExpress.dataSourceRoute((req, res) => {
           return results;
         }, []);
       }
+    },
+    {
+      route: 'greetingById[{keys:ids}][{keys:keys}]',
+      get(pathSet) {
+        const ids = pathSet.ids;
+        const keys = pathSet.keys;
+        return ids.reduce((results, id) => {
+          for (let key of keys) {
+            results.push({
+              path: ['greetingById', id, key],
+              value: greetings[id][key]
+            });
+          }
+          return results;
+        }, []);
+      }
     }
   ]);
 }));
