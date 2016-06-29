@@ -55,18 +55,22 @@ app.use('/model.json', falcorExpress.dataSourceRoute((req, res) => {
       }
     },
     {
-      route: 'greetingsWithRanges[{ranges:ranges}].word',
+      route: 'greetingsWithRanges[{ranges:ranges}]',
       get(pathSet) {
         // クライアントから['greetings', [0, 1, 2] 'word'] というPathSetのリクエストが
         // 行われた場合、pathSet.ranges には [{from: 0, to: 2}] が渡ってくる。
         const ranges = pathSet.ranges;
+        const ids = Object.keys(greetings);
         return ranges.reduce((results, range) => {
           const from = range.from;
           const to = range.to;
           for (let i = from; i <= to; i++) {
             results.push({
-              path: ['greetingsWithRanges', i, 'word'],
-              value: greetings[i].word
+              path: ['greetingsWithRanges', i],
+              value: {
+                $type: 'ref',
+                value: ['greetingById', ids[i]]
+              }
             });
           }
           return results;
