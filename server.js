@@ -36,16 +36,20 @@ app.use('/model.json', falcorExpress.dataSourceRoute((req, res) => {
       }
     },
     {
-      route: 'greetings[{integers:indices}].word',
+      route: 'greetings[{integers:indices}]',
       get(pathSet) {
         // クライアントから['greetings', [0, 1, 2] 'word'] というPathSetのリクエストが
         // 行われた場合、pathSet.indices には [0, 1, 2] の配列が渡ってくる。
         const indices = pathSet.indices;
+        const ids = Object.keys(greetings);
         // 戻り値には {path, value} のペアを持ったオブジェクトの配列を返すこともできる。
         return indices.map(index => {
           return {
-            path: ['greetings', index, 'word'],
-            value: greetings[index].word
+            path: ['greetings', index],
+            value: {
+              $type: 'ref',
+              value: ['greetingById', ids[index]]
+            }
           };
         });
       }
