@@ -7,6 +7,23 @@ const FalcorRouter = require('falcor-router');
 const app = express();
 
 app.use(bodyParser.urlencoded({extended: true}));
+
+// サンプルコードのため簡単なダミーデータを用いる。
+const greetings = {
+  "100": {
+    language: 'Japanese',
+    word: 'Konnichiwa'
+  },
+  "101": {
+    language: 'English',
+    word: 'Good afternoon'
+  },
+  "102": {
+    language: 'French',
+    word: 'Bonjour'
+  }
+};
+
 app.use('/model.json', falcorExpress.dataSourceRoute((req, res) => {
   return new FalcorRouter([
     {
@@ -21,12 +38,6 @@ app.use('/model.json', falcorExpress.dataSourceRoute((req, res) => {
     {
       route: 'greetings[{integers:indices}].word',
       get(pathSet) {
-        // サンプルコードのため簡単なダミーデータを用いる。
-        const greetings = [
-          {word: 'Konnichiwa'},
-          {word: 'Good afternoon'},
-          {word: 'Bonjour'}
-        ];
         // クライアントから['greetings', [0, 1, 2] 'word'] というPathSetのリクエストが
         // 行われた場合、pathSet.indices には [0, 1, 2] の配列が渡ってくる。
         const indices = pathSet.indices;
@@ -42,11 +53,6 @@ app.use('/model.json', falcorExpress.dataSourceRoute((req, res) => {
     {
       route: 'greetingsWithRanges[{ranges:ranges}].word',
       get(pathSet) {
-        const greetings = [
-          {word: 'Konnichiwa'},
-          {word: 'Good afternoon'},
-          {word: 'Bonjour'}
-        ];
         // クライアントから['greetings', [0, 1, 2] 'word'] というPathSetのリクエストが
         // 行われた場合、pathSet.ranges には [{from: 0, to: 2}] が渡ってくる。
         const ranges = pathSet.ranges;
@@ -66,11 +72,6 @@ app.use('/model.json', falcorExpress.dataSourceRoute((req, res) => {
     {
       route: 'greetingsWithKeys[{integers:indices}][{keys:keys}]',
       get(pathSet) {
-        const greetings = [
-          {language: 'Japanese', word: 'Konnichiwa'},
-          {language: 'English', word: 'Good afternoon'},
-          {language: 'French', word: 'Bonjour'}
-        ];
         // pathSet.indicesの中身は [0, 1, 2] などの配列
         const indices = pathSet.indices;
         // pathSet.keysの中身は ['language', 'word'] などの配列
