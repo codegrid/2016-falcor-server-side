@@ -1,6 +1,5 @@
 const model = new falcor.Model({
-  source: new falcor.HttpDataSource('/model.json'),
-  maxSize: 0
+  source: new falcor.HttpDataSource('/model.json')
 });
 
 model.get(['greetings', [0, 1, 2], 'word']).then(res => {
