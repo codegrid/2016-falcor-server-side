@@ -78,21 +78,20 @@ app.use('/model.json', falcorExpress.dataSourceRoute((req, res) => {
       }
     },
     {
-      route: 'greetingsWithKeys[{integers:indices}][{keys:keys}]',
+      route: 'greetingsWithKeys[{integers:indices}]',
       get(pathSet) {
         // pathSet.indicesの中身は [0, 1, 2] などの配列
         const indices = pathSet.indices;
-        // pathSet.keysの中身は ['language', 'word'] などの配列
-        const keys = pathSet.keys;
-        return indices.reduce((results, index) => {
-          for (let key of keys) {
-            results.push({
-              path: ['greetingsWithKeys', index, key],
-              value: greetings[index][key]
-            });
-          }
-          return results;
-        }, []);
+        const ids = Object.keys(greetings);
+        return indices.map(index => {
+          return {
+            path: ['greetingsWithKeys', index],
+            value: {
+              $type: 'ref',
+              value: ['greetingById', ids[index]]
+            }
+          };
+        });
       }
     },
     {
