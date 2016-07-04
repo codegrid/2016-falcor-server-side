@@ -192,6 +192,12 @@ app.use('/model.json', falcorExpress.dataSourceRoute((req, res) => {
             }
           });
         }
+        // greetingsコレクションのキャッシュ整合性が保てないので
+        // クライアントにキャッシュの破棄を支持する
+        results.push({
+          path: ['greetings'],
+          invalidated: true
+        });
         return results;
       }
     },
@@ -212,6 +218,12 @@ app.use('/model.json', falcorExpress.dataSourceRoute((req, res) => {
             invalidated: true
           });
         }
+        // greetingsコレクションのキャッシュ整合性が保てないので
+        // クライアントにキャッシュの破棄を支持する
+        results.push({
+          path: ['greetings'],
+          invalidated: true
+        });
         return results;
       }
     }
