@@ -139,8 +139,50 @@ function example3() {
     });
 }
 
+/**
+ * model.call()によるリモート側のリソース削除を行い、
+ * model.get()でローカル側キャッシュからも削除されていることを確認します
+ * @return {Promise}
+ */
+function example4() {
+  const name = 'model.call(["greetingById", "100", "remove"])';
+  console.group(name);
+
+  return Promise.resolve()
+    .then(() => {
+      return model.call(['greetingById', 100, 'remove'])
+    })
+    .then(res => {
+      console.log('model.callの結果');
+      console.log(res);
+    })
+    .then(() => {
+      const _name = 'model.get(["greetingById", 100, ["word", "language"]])';
+      console.group(_name);
+
+      return Promise.resolve()
+        .then(() => {
+          return model.get(['greetingById', 100, ['word', 'language']]);
+        })
+        .catch(errors => {
+          console.log('すでに削除されてエラーが返るかを確認する');
+          for (let error of errors) {
+            console.error(error.value);
+          }
+          console.groupEnd(_name);
+        });
+    })
+    .then(() => {
+      // キャッシュ破棄
+      return model.invalidate([['greetings', 'greetingById']]);
+    })
+    .then(() => {
+      console.groupEnd(name);
+    });
+}
 
 Promise.resolve()
   .then(() => example1())
   .then(() => example2())
-  .then(() => example3());
+  .then(() => example3())
+  .then(() => example4());

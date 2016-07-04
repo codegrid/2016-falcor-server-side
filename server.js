@@ -101,10 +101,20 @@ app.use('/model.json', falcorExpress.dataSourceRoute((req, res) => {
         const keys = pathSet.keys;
         return ids.reduce((results, id) => {
           for (let key of keys) {
-            results.push({
-              path: ['greetingById', id, key],
-              value: greetings[id][key]
-            });
+            try {
+              results.push({
+                path: ['greetingById', id, key],
+                value: greetings[id][key]
+              });
+            } catch(error) {
+              results.push({
+                path: ['greetingById', id, key],
+                value: {
+                  $type: 'error',
+                  value: error.message
+                }
+              });
+            }
           }
           return results;
         }, []);
@@ -180,6 +190,26 @@ app.use('/model.json', falcorExpress.dataSourceRoute((req, res) => {
               $type: 'ref',
               value: ['greetingById', arg.id]
             }
+          });
+        }
+        return results;
+      }
+    },
+    {
+      // ID指定で特定のリソースを削除できるようにする
+      route: 'greetingById[{keys:ids}].remove',
+      call(callPath) {
+        const results = [];
+        // get用のアクションを定義したときと同じように、パターンマッチ部分の
+        // 値は配列などで受け取ることができる。
+        const ids = callPath.ids;
+        for (let id of ids) {
+          delete greetings[id];
+          // 削除されたリソースのキャッシュを破棄する指示を
+          // レスポンスに含める
+          results.push({
+            path: ['greetingById', id],
+            invalidated: true
           });
         }
         return results;
