@@ -109,6 +109,42 @@ app.use('/model.json', falcorExpress.dataSourceRoute((req, res) => {
           return results;
         }, []);
       }
+    },
+    {
+      route: 'greetingById[{keys:ids}][{keys:keys}]',
+      set(jsonGraph) {
+        // 引数jsonGraphには次のように更新する値がオブジェクトの形で渡ってくる
+        //
+        // {
+        //   greetingById: {
+        //     '100': {
+        //       language: '日本語',
+        //       word: 'こんにちは'
+        //     },
+        //     '101': {
+        //       language: '英語',
+        //       word: 'グッドアフタヌーン'
+        //     }
+        //   }
+        // }
+        const ids = Object.keys(jsonGraph.greetingById);
+        return ids.reduce((results, id) => {
+          const newValues = jsonGraph.greetingById[id];
+          for (let key of Object.keys(newValues)) {
+            const newValue = newValues[key];
+            // リモート側の値を更新する
+            // データベースを使っている場合はその更新を行い
+            // 永続化処理が別のサービス上にある場合はそちらのURLなどをリクエストする
+            greetings[id][key] = newValue;
+            // 更新された値のPathと新しい値をレスポンスに含めて返す
+            results.push({
+              path: ['greetingById', id, key],
+              value: newValue
+            });
+          }
+          return results;
+        }, []);
+      }
     }
   ]);
 }));

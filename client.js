@@ -2,51 +2,99 @@ const model = new falcor.Model({
   source: new falcor.HttpDataSource('/model.json')
 });
 
-model.get(['greetings', [0, 1, 2], 'word']).then(res => {
-  const name = '["greetings", [0, 1, 2], "word"]';
+/**
+ * model.set()によるリモート側のリソース更新を行い、
+ * model.get()でローカル側キャッシュが更新されていることを確認します
+ * @return {Promise}
+ */
+function example1() {
+  const name = 'model.set({"json": {"greetings": {0: {"word": "こんにちは"}, 1: {"word": "グッドアフタヌーン"}}}})';
   console.group(name);
-  console.log(JSON.stringify(res, null, 2));
-  console.groupEnd(name);
-});
 
-model.get(['greetings', {length: 3}, 'word']).then(res => {
-  const name = '["greetings", {length: 3}, "word"]';
-  console.group(name);
-  console.log(JSON.stringify(res, null, 2));
-  console.groupEnd(name);
-});
+  return Promise.resolve()
+    .then(() => {
+      return model.set({
+        json: {
+          "greetings": {
+            0: {word: 'こんにちは'},
+            1: {word: 'グッドアフタヌーン'}
+          }
+        }
+      })
+      .then(res => {
+        console.log('model.setの結果');
+        console.log(res);
+      })
+      .then(() => {
+        const _name = 'model.get(["greetings", [0, 1], "word"])';
+        console.group(_name);
 
-model.get(['greetings', {from: 0, to: 2}, 'word']).then(res => {
-  const name = '["greetings", {from: 0, to: 2}, "word"]';
-  console.group(name);
-  console.log(JSON.stringify(res, null, 2));
-  console.groupEnd(name);
-});
+        return Promise.resolve()
+          .then(() => {
+            return model.get(['greetings', [0, 1], 'word']);
+          })
+          .then(res => {
+            console.log('更新されたかを確認するmodel.getの結果');
+            console.log(res);
+            console.groupEnd(_name);
+          });
+      })
+      .then(() => {
+        // キャッシュ破棄
+        return model.invalidate(['greetings', [0, 1], 'word']);
+      })
+      .then(() => {
+        console.groupEnd(name);
+      });
+    });
+}
 
-model.get(['greetingsWithRanges', [0, 1, 2], 'word']).then(res => {
-  const name = '["greetingsWithRanges", [0, 1, 2], "word"]';
+/**
+ * より多くの値をmodel.set()で更新します
+ * @return {Promise}
+ */
+function example2() {
+  const name = 'model.set({"json": {"greetings": {0: {"word": "こんにちは", "language": "日本語"}, 1: {"word": "グッドアフタヌーン", "language": "英語"}}}})';
   console.group(name);
-  console.log(JSON.stringify(res, null, 2));
-  console.groupEnd(name);
-});
 
-model.get(['greetingsWithRanges', {length: 3}, 'word']).then(res => {
-  const name = '["greetingsWithRanges", {length: 3}, "word"]';
-  console.group(name);
-  console.log(JSON.stringify(res, null, 2));
-  console.groupEnd(name);
-});
+  return Promise.resolve()
+    .then(() => {
+      return model.set({
+        json: {
+          "greetings": {
+            0: {word: 'こんにちは', language: '日本語'},
+            1: {word: 'グッドアフタヌーン', language: '英語'}
+          }
+        }
+      })
+      .then(res => {
+        console.log('model.setの結果');
+        console.log(res);
+      })
+      .then(() => {
+        const _name = 'model.get(["greetings", [0, 1], ["word", "language"]])';
+        console.group(_name);
 
-model.get(['greetingsWithRanges', {from: 0, to: 2}, 'word']).then(res => {
-  const name = '["greetingsWithRanges", {from: 0, to: 2}, "word"]';
-  console.group(name);
-  console.log(JSON.stringify(res, null, 2));
-  console.groupEnd(name);
-});
+        return Promise.resolve()
+          .then(() => {
+            return model.get(['greetings', [0, 1], ['word', 'language']]);
+          })
+          .then(res => {
+            console.log('更新されたかを確認するmodel.getの結果');
+            console.log(res);
+            console.groupEnd(_name);
+          });
+      })
+      .then(() => {
+        // キャッシュ破棄
+        return model.invalidate(['greetings', [0, 1], 'word']);
+      })
+      .then(() => {
+        console.groupEnd(name);
+      });
+    });
+}
 
-model.get(['greetingsWithKeys', {length: 3}, ['language', 'word']]).then(res => {
-  const name = '["greetingsWithKeys", {length: 3}, ["language", "word"]]';
-  console.group(name);
-  console.log(JSON.stringify(res, null, 2));
-  console.groupEnd(name);
-});
+Promise.resolve()
+  .then(() => example1())
+  .then(() => example2());
