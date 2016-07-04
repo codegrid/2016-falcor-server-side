@@ -145,6 +145,45 @@ app.use('/model.json', falcorExpress.dataSourceRoute((req, res) => {
           return results;
         }, []);
       }
+    },
+    {
+      route: 'greetings.add',
+      // callメソッドを定義する
+      call(callPath, args) {
+        // callPathにはPathに関する情報が渡る
+        // このFalcor routeではパターンマッチなどは使っておらず
+        // 常に['greetings', 'add']の値しか来ないので特に使わない。
+        //
+        // callPath: ['greetings', add]
+        //
+        // argsにはcallメソッドで呼び出す機能に対する引数が渡ってくる
+        const results = [];
+
+        for (let arg of args) {
+          // リモート側の値を更新する
+          // データベースを使っている場合はその更新を行い
+          // 永続化処理が別のサービス上にある場合はそちらのURLなどをリクエストする
+          greetings[arg.id] = {
+            word: arg.word,
+            language: arg.language
+          };
+          const length = Object.keys(greetings).length;
+          // 追加された値のPathと新しい値をレスポンスに含めて返す
+          // このとき、greetings.addの文脈で追加されているため
+          // Pathもgreetings.3のような形式を指定する。
+          //
+          // しかしリソースの実体はgreetingByIdの方にあるので
+          // その関係をReference型で表現する。
+          results.push({
+            path: ['greetings', length - 1],
+            value: {
+              $type: 'ref',
+              value: ['greetingById', arg.id]
+            }
+          });
+        }
+        return results;
+      }
     }
   ]);
 }));

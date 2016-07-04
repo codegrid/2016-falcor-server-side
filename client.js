@@ -41,7 +41,7 @@ function example1() {
       })
       .then(() => {
         // キャッシュ破棄
-        return model.invalidate(['greetings', [0, 1], 'word']);
+        return model.invalidate(['greetings', 'greetingById']);
       })
       .then(() => {
         console.groupEnd(name);
@@ -87,7 +87,51 @@ function example2() {
       })
       .then(() => {
         // キャッシュ破棄
-        return model.invalidate(['greetings', [0, 1], 'word']);
+        return model.invalidate(['greetings', 'greetingById']);
+      })
+      .then(() => {
+        console.groupEnd(name);
+      });
+    });
+}
+
+/**
+ * model.call()によるリモート側のリソース追加を行い、
+ * model.get()でローカル側キャッシュにも追加されていることを確認します
+ * @return {Promise}
+ */
+function example3() {
+  const name = 'model.call("greetings.add", [{"id": "103", "word": "Nihao", "language": "Chinese"}])';
+  console.group(name);
+
+  return Promise.resolve()
+    .then(() => {
+      return model.call('greetings.add', [{
+        id: '103',
+        word: 'Nihao',
+        language: 'Chinese'
+      }], ['word', 'language'])
+      .then(res => {
+        console.log('model.callの結果');
+        console.log(res);
+      })
+      .then(() => {
+        const _name = 'model.get(["greetings", 3, ["word", "language"]])';
+        console.group(_name);
+
+        return Promise.resolve()
+          .then(() => {
+            return model.get(['greetings', 3, ['word', 'language']]);
+          })
+          .then(res => {
+            console.log('追加されたかを確認するmodel.getの結果');
+            console.log(res);
+            console.groupEnd(_name);
+          });
+      })
+      .then(() => {
+        // キャッシュ破棄
+        return model.invalidate([['greetings', 'greetingById']]);
       })
       .then(() => {
         console.groupEnd(name);
@@ -97,4 +141,5 @@ function example2() {
 
 Promise.resolve()
   .then(() => example1())
-  .then(() => example2());
+  .then(() => example2())
+  .then(() => example3());
