@@ -67,31 +67,31 @@ function example2() {
           }
         }
       })
-      .then(res => {
-        console.log('model.setの結果');
-        console.log(res);
-      })
-      .then(() => {
-        const _name = 'model.get(["greetings", [0, 1], ["word", "language"]])';
-        console.group(_name);
+    })
+    .then(res => {
+      console.log('model.setの結果');
+      console.log(res);
+    })
+    .then(() => {
+      const _name = 'model.get(["greetings", [0, 1], ["word", "language"]])';
+      console.group(_name);
 
-        return Promise.resolve()
-          .then(() => {
-            return model.get(['greetings', [0, 1], ['word', 'language']]);
-          })
-          .then(res => {
-            console.log('更新されたかを確認するmodel.getの結果');
-            console.log(res);
-            console.groupEnd(_name);
-          });
-      })
-      .then(() => {
-        // キャッシュ破棄
-        return model.invalidate(['greetings', 'greetingById']);
-      })
-      .then(() => {
-        console.groupEnd(name);
-      });
+      return Promise.resolve()
+        .then(() => {
+          return model.get(['greetings', [0, 1], ['word', 'language']]);
+        })
+        .then(res => {
+          console.log('更新されたかを確認するmodel.getの結果');
+          console.log(res);
+          console.groupEnd(_name);
+        });
+    })
+    .then(() => {
+      // キャッシュ破棄
+      return model.invalidate(['greetings', 'greetingById']);
+    })
+    .then(() => {
+      console.groupEnd(name);
     });
 }
 
@@ -111,33 +111,34 @@ function example3() {
         word: 'Nihao',
         language: 'Chinese'
       }], ['word', 'language'])
-      .then(res => {
-        console.log('model.callの結果');
-        console.log(res);
-      })
-      .then(() => {
-        const _name = 'model.get(["greetings", 3, ["word", "language"]])';
-        console.group(_name);
+    })
+    .then(res => {
+      console.log('model.callの結果');
+      console.log(res);
+    })
+    .then(() => {
+      const _name = 'model.get(["greetings", 3, ["word", "language"]])';
+      console.group(_name);
 
-        return Promise.resolve()
-          .then(() => {
-            return model.get(['greetings', 3, ['word', 'language']]);
-          })
-          .then(res => {
-            console.log('追加されたかを確認するmodel.getの結果');
-            console.log(res);
-            console.groupEnd(_name);
-          });
-      })
-      .then(() => {
-        // キャッシュ破棄
-        return model.invalidate([['greetings', 'greetingById']]);
-      })
-      .then(() => {
-        console.groupEnd(name);
-      });
+      return Promise.resolve()
+        .then(() => {
+          return model.get(['greetings', 3, ['word', 'language']]);
+        })
+        .then(res => {
+          console.log('追加されたかを確認するmodel.getの結果');
+          console.log(res);
+          console.groupEnd(_name);
+        });
+    })
+    .then(() => {
+      // キャッシュ破棄
+      return model.invalidate([['greetings', 'greetingById']]);
+    })
+    .then(() => {
+      console.groupEnd(name);
     });
 }
+
 
 Promise.resolve()
   .then(() => example1())
