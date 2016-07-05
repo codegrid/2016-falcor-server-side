@@ -1,6 +1,6 @@
 # CodeGrid Falcor Server DEMO
 
-[CodeGrid](https://app.codegrid.net/)の「[Falcorで実現する効率的なfetch サーバー編ん](https://app.codegrid.net/series/2016-falcor-server-side)」シリーズに関連したサンプルコードです。
+[CodeGrid](https://app.codegrid.net/)の「[Falcorで実現する効率的なfetch サーバー編](https://app.codegrid.net/series/2016-falcor-server-side)」シリーズに関連したサンプルコードです。
 
 ## 使い方
 
